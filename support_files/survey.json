@@ -1,0 +1,9 @@
+{
+    "id": 2,
+    "answers": {
+        "bar": "baz",
+        "active": false,
+        "balance": 7.77
+    },
+    "activity": 6
+}
