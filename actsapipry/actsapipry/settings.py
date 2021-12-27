@@ -25,8 +25,7 @@ SECRET_KEY = '#t83jj^15s85sc=xo1z8l-fyy@5%ll#byyo5442r8=1$z$g6u5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 
@@ -39,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'actsapi.apps.ActsapiConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +49,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+# CORS Config
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'actsapipry.urls'
 
@@ -117,7 +121,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

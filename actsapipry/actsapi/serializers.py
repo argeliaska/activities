@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Property, Activity
+from .models import Property, Activity, Survey
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -31,11 +31,10 @@ class PropertySerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(serializers.ModelSerializer):
-    property = serializers.StringRelatedField()
-    
+   
     class Meta:
         model = Activity
-        fields = ['id', 'title', 'schedule', 'status', 'property']
+        fields = '__all__'
 
     def create(self, validated_data):
         """
@@ -54,4 +53,19 @@ class ActivitySerializer(serializers.ModelSerializer):
         instance.updated_at = validatd_data.get('updated_at', instance.updated_at)
         instance.status = validatd_data.get('status', instance.status)
         instance.save()
-        return instance        
+        return instance
+
+
+class PropertyInActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        exclude = ('description','status','created_at','updated_at','disabled_at')
+
+
+class ActivityListSerializer(serializers.ModelSerializer):
+    property = PropertyInActivitySerializer(read_only=True)
+    survey = serializers.StringRelatedField()
+    
+    class Meta:
+        model = Activity
+        fields = ['id', 'schedule', 'title', 'created_at', 'status', 'condition', 'property', 'survey']

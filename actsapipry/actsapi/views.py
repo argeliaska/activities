@@ -2,9 +2,9 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Property, Activity
-from .serializers import PropertySerializer, ActivitySerializer
+from .serializers import PropertySerializer, ActivitySerializer, ActivityListSerializer
 from django.http import Http404
-
+from datetime import datetime, date, timedelta
 
 class PropertyList(APIView):
     """
@@ -61,12 +61,19 @@ class ActivityList(APIView):
     Regresa el listado de actividades agendadas
     """
     def get(self, request, format=None):
-        print("request", request)
-        activities = Activity.objects.all()
-        serializers = ActivitySerializer(activities, many=True)
+
+        hoy = datetime.now()
+        dhoy = date(hoy.year, hoy.month, hoy.day)
+
+        dia_desde = dhoy + timedelta(days=-4)
+        dia_hasta = dhoy + timedelta(days=16)
+
+        activities = Activity.objects.all().filter(schedule__date__gt=dia_desde, schedule__date__lte=dia_hasta)
+        serializers = ActivityListSerializer(activities, many=True, context={'request': request})
         return Response(serializers.data)
 
     def post(self, request, format=None):
+        actividad = request.data
         serializers = ActivitySerializer(data=request.data)
         if serializers.is_valid():
             serializers.save()
