@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Property, Activity, Survey
+from .models import CANCELED_STATUS, Property, Activity, Survey
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -42,19 +42,18 @@ class ActivitySerializer(serializers.ModelSerializer):
         """
         return Activity.objects.create(**validated_data)
 
-    def update(self, instance, validatd_data):
+    def update(self, instance, validated_data):
         """
         Actualiza el objeto Activity y regresa su instancia
         """
-        instance.property_id = validatd_data('property_id', instance.property_id)
-        instance.schedule = validatd_data('schedule', instance.schedule)
-        instance.title = validatd_data.get('title', instance.title)
-        instance.created_at = validatd_data.get('created_at', instance.created_at)
-        instance.updated_at = validatd_data.get('updated_at', instance.updated_at)
-        instance.status = validatd_data.get('status', instance.status)
+        instance.property_id = validated_data('property_id', instance.property_id)
+        instance.schedule = validated_data('schedule', instance.schedule)
+        instance.title = validated_data.get('title', instance.title)
+        instance.created_at = validated_data.get('created_at', instance.created_at)
+        instance.updated_at = validated_data.get('updated_at', instance.updated_at)
+        instance.status = validated_data.get('status', instance.status)
         instance.save()
         return instance
-
 
 class PropertyInActivitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,8 +63,36 @@ class PropertyInActivitySerializer(serializers.ModelSerializer):
 
 class ActivityListSerializer(serializers.ModelSerializer):
     property = PropertyInActivitySerializer(read_only=True)
-    survey = serializers.StringRelatedField()
+    survey = serializers.StringRelatedField(many=True)
     
     class Meta:
         model = Activity
         fields = ['id', 'schedule', 'title', 'created_at', 'status', 'condition', 'property', 'survey']
+
+    
+class CancelActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = ('status',)
+
+    def update(self, instance, validated_data):
+        """
+        Actualiza el atributo 'status' del objeto Activity y regresa su instancia
+        """
+        instance.status = validated_data.get('status', instance.status)
+        instance.save()
+        return instance
+
+
+class RescheduleActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = ('schedule',)
+
+    def update(self, instance, validated_data):
+        """
+        Actualiza el atributo 'schedule' del objeto Activity y regresa su instancia
+        """
+        instance.status = validated_data.get('schedule', instance.schedule)
+        instance.save()
+        return instance

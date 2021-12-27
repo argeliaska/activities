@@ -1,14 +1,15 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from datetime import datetime, date
+import json
 
 ACTIVE_STATUS = 'active'
 INACTIVE_STATUS = 'inactive'
-CANCELLED_STATUS = 'canceled'
+CANCELED_STATUS = 'canceled'
 DONE_STATUS = 'done'
 
 STATUS_CHOICES = [(ACTIVE_STATUS,ACTIVE_STATUS), (INACTIVE_STATUS,INACTIVE_STATUS)]
-ACTIVITY_STATUS_CHOICES = [ACTIVE_STATUS, CANCELLED_STATUS, DONE_STATUS]
+ACTIVITY_STATUS_CHOICES = [ACTIVE_STATUS, CANCELED_STATUS, DONE_STATUS]
 
 
 class Property(models.Model):
@@ -45,7 +46,7 @@ class Activity(models.Model):
         condition = "Error"
         if self.status == DONE_STATUS:
             condition = "Finalizada"
-        elif self.status == CANCELLED_STATUS:
+        elif self.status == CANCELED_STATUS:
             condition = "Cancelada"
         if self.status == ACTIVE_STATUS:
             if scheduleday >= hoy:
@@ -60,13 +61,13 @@ class Activity(models.Model):
         # unique_together = ['property', 'schedule']
         ordering = ('property','schedule',)
         
-    def __str__(self):
+    def __str__(self) -> str:
         act = self.__dict__
         return act["schedule"].strftime("%d/%m/%Y %H:%M") + " -> " + act["title"]
 
 
 class Survey(models.Model):
-    # id = models.IntegerField(primary_key=True)
+    # id = models.IntegerField(primary_key=True, verbose_name="ID")
     activity = models.ForeignKey(Activity, related_name='survey', on_delete=models.CASCADE)
     answers = JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -76,5 +77,9 @@ class Survey(models.Model):
 
     def __str__(self):
         if self.id:
-            return self.activity.__str__ + self.answers
+            ans = json.dumps(self.answers)
+            act = self.activity.__dict__
+            label = act["schedule"].strftime("%d/%m/%Y %H:%M") + " -> " + act["title"]
+            label += ' '+ ans
+            return label
         return ''

@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^api/v1/properties/(?P<pk>[0-9]+)$', views.PropertyDetail.as_view()),
     url(r'^api/v1/activities/$', views.ActivityList.as_view()),
     url(r'^api/v1/activities/(?P<pk>[0-9]+)$', views.ActivityDetail.as_view()),
+    url(r'^api/v1/cancel_activity/(?P<pk>[0-9]+)$', views.CancelActivity.as_view()),
+    url(r'^api/v1/resc_activity/(?P<pk>[0-9]+)$', views.RescheduleActivity.as_view()),
 ]
