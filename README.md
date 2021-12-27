@@ -1,4 +1,4 @@
-## API REST Actividades de propiedades para TH
+# API REST Actividades de propiedades para TH
 TH DRF CRUD practice test 
 
 Esta API contiene los servicios REST necesarios para agendar, listar, reagendar y cancelar actividades 
@@ -9,7 +9,7 @@ y Django Rest Framework usando Postgresql como base de datos
 
 ---
 
-# En este proyecto solo utilice la rama **main**
+### En este proyecto solo utilice la rama **main**
 
 ---
 
