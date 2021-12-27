@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Property, Activity
+from .models import ACTIVE_STATUS, INACTIVE_STATUS, Property, Activity
 from .serializers import PropertySerializer, ActivitySerializer, ActivityListSerializer
 from django.http import Http404
 from datetime import datetime, date, timedelta
@@ -74,6 +74,22 @@ class ActivityList(APIView):
 
     def post(self, request, format=None):
         actividad = request.data
+
+        prop_id = actividad["property"]
+        prop = Property.objects.get(id=prop_id)
+        fecha = actividad["schedule"]
+
+        if prop:
+            if prop.status == INACTIVE_STATUS:
+                return Response({"detail":"Propiedad inactiva"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                try:
+                    agendada = Activity.objects.get(property=prop_id, schedule=fecha)
+                    if agendada:
+                        return Response({"detail":"La propiedad tiene una actividad agendada para esa fecha y hora"}, status=status.HTTP_400_BAD_REQUEST)
+                except Activity.DoesNotExist:
+                    pass
+        
         serializers = ActivitySerializer(data=request.data)
         if serializers.is_valid():
             serializers.save()
