@@ -1,8 +1,10 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import ACTIVE_STATUS, CANCELED_STATUS, INACTIVE_STATUS, Property, Activity
-from .serializers import PropertySerializer, ActivitySerializer, ActivityListSerializer, CancelActivitySerializer, RescheduleActivitySerializer
+from .models import ACTIVE_STATUS, CANCELED_STATUS, INACTIVE_STATUS, Property, Activity, Survey
+from .serializers import PropertySerializer, ActivitySerializer, \
+                         ActivityListSerializer, CancelActivitySerializer, \
+                         RescheduleActivitySerializer, SurveySerializer
 from django.http import Http404
 from datetime import datetime, date, timedelta
 
@@ -77,7 +79,7 @@ class ActivityList(APIView):
                 activities = Activity.objects.all().filter(status=status,schedule__date__gt=fecha_ini, schedule__date__lt=fecha_ini)
             serializers = ActivityListSerializer(activities, many=True, context={'request': request})
             return Response(serializers.data)
-            
+
         else:
             hoy = datetime.now()
             dhoy = date(hoy.year, hoy.month, hoy.day)
@@ -189,3 +191,19 @@ class RescheduleActivity(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SurveyDetail(APIView):
+    """
+    Obtiene y muestra la encuesta de satisfacción
+    """
+    def get_object(self, pk):
+        try:
+            survey = Survey.objects.get(pk=pk)
+            return survey
+        except Survey.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        survey = self.get_object(pk)
+        serializer = SurveySerializer(survey)
+        return Response(serializer.data)

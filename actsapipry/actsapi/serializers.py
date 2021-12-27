@@ -1,3 +1,5 @@
+from django.contrib.postgres import fields
+from django.db import models
 from rest_framework import serializers
 from .models import CANCELED_STATUS, Property, Activity, Survey
 
@@ -63,8 +65,12 @@ class PropertyInActivitySerializer(serializers.ModelSerializer):
 
 class ActivityListSerializer(serializers.ModelSerializer):
     property = PropertyInActivitySerializer(read_only=True)
-    survey = serializers.StringRelatedField(many=True)
-    
+    survey = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='survey-detail'
+    )
+
     class Meta:
         model = Activity
         fields = ['id', 'schedule', 'title', 'created_at', 'status', 'condition', 'property', 'survey']
@@ -96,3 +102,9 @@ class RescheduleActivitySerializer(serializers.ModelSerializer):
         instance.status = validated_data.get('schedule', instance.schedule)
         instance.save()
         return instance
+
+
+class SurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Survey
+        fields = '__all__'        
