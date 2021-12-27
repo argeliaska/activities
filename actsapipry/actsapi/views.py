@@ -63,7 +63,7 @@ class ActivityList(APIView):
     Regresa el listado de actividades agendadas
     """
     def get(self, request, format=None):
-
+        
         if request.data:
             params = request.data
 
@@ -90,6 +90,7 @@ class ActivityList(APIView):
             activities = Activity.objects.all().filter(schedule__date__gt=dia_desde, schedule__date__lt=dia_hasta)
             serializers = ActivityListSerializer(activities, many=True, context={'request': request})
             return Response(serializers.data)
+
 
     def post(self, request, format=None):
         actividad = request.data
