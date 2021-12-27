@@ -25,7 +25,7 @@ SECRET_KEY = '#t83jj^15s85sc=xo1z8l-fyy@5%ll#byyo5442r8=1$z$g6u5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0', '*']
 
 # Application definition
 
@@ -79,17 +79,28 @@ WSGI_APPLICATION = 'actsapipry.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'true_home',
-        'USER': 'usr_true_home',
-        'PASSWORD': 'trU3Hom#',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+if os.getenv('GOOGLE_CLOUD_PROJECT', None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'HOST': '/cloudsql/activities-336416:us-west4:postgreinst',
+            'NAME': 'true_home',
+            'USER': 'usr_true_home',
+            'PASSWORD': 'trU3Hom#',
+            'PORT': '5432',
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'true_home',
+            'USER': 'usr_true_home',
+            'PASSWORD': 'trU3Hom#',
+            'HOST': '34.125.171.224',
+            'PORT': '5432',
+    }
+  }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
