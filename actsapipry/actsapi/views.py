@@ -74,9 +74,9 @@ class ActivityList(APIView):
             if status:
                 activities = Activity.objects.all().filter(status=status)
             elif fecha_ini and fecha_fin:
-                activities = Activity.objects.all().filter(schedule__date__gt=fecha_ini, schedule__date__lt=fecha_ini)
+                activities = Activity.objects.all().filter(schedule__date__gt=fecha_ini, schedule__date__lt=fecha_fin)
             elif status and fecha_ini and fecha_fin:
-                activities = Activity.objects.all().filter(status=status,schedule__date__gt=fecha_ini, schedule__date__lt=fecha_ini)
+                activities = Activity.objects.all().filter(status=status,schedule__date__gt=fecha_ini, schedule__date__lt=fecha_fin)
             serializers = ActivityListSerializer(activities, many=True, context={'request': request})
             return Response(serializers.data)
 
